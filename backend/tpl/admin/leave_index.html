@@ -1,0 +1,81 @@
+{extend name="public:base" /}
+{block name="style"}
+    <style>
+
+    </style>
+{/block}
+{block name="script"}
+    <script>
+        layui.use('form', function () {
+            var form = layui.form, layer = layui.layer, $ = layui.jquery;
+
+            form.on('switch(state)', function(data) {
+                var id = $(data.elem).attr("data-id");
+                $.ajax({
+                    url: "{:url('state')}",
+                    data: {
+                        id: id,
+                    },
+                    type: "get",
+                    dataType: "json",
+                    success: function(e) {
+                        if (e.code== 1) {
+                            layer.msg(e.msg, {
+                                icon: 1
+                            });
+                        } else {
+                            layer.msg(e.msg, {
+                                icon: 2,
+                                shade: 0.5,
+                                time: 2000,
+                                shadeClose: true
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{/block}
+{block name="body"}
+	<h1>留言列表</h1>
+
+    <!--<a href="{:url('add')}" class="layui-btn"><i class="layui-icon">&#xe654;</i>添加工作经历</a>-->
+    <table class="layui-table layui-form">
+        <colgroup>
+            <col width="50">
+            <col width="200">
+            <col width="140">
+            <col>
+            <col width="200">
+            <col width="160">
+            <col width="100">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>用户qq</th>
+                <th>留言内容</th>
+                <th>留言时间</th>
+                <th>回复的留言id</th>
+                <th>ip</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {volist name="list" id="vo"}
+                <tr class="id{$vo.id}">
+                    <td>{$vo.id}</td>
+                    <td>{$vo.user.name}</td>
+                    <td>{$vo.qq}</td>
+                    <td>{$vo.content}</td>
+                    <td>{$vo.time|date="Y-m-d H:i:s",###}</td>
+                    <td>{$vo.pid}</td>
+                    <td>{$vo.ip}</td>
+                    <td><a href="{:url('update?id='.$vo['id'])}">修改</a> | <a class="del" data-id=".id{$vo.id}"  href="{:url('del?id='.$vo['id'])}">删除</a></td>
+               </tr>
+            {/volist}
+        </tbody>
+    </table>
+{/block}
